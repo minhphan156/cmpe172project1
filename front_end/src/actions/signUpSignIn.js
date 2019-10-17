@@ -1,0 +1,42 @@
+import axios from "axios";
+import { SIGN_UP, IS_LOGGED_IN, LOG_OUT } from "./types";
+import { Redirect } from "react-router-dom";
+export const createAccount = signUpInfo => dispatch => {
+  axios
+    .post("http://localhost:3001/users/newuser", signUpInfo)
+    .then(res => {
+      console.log(res);
+      dispatch({
+        type: IS_LOGGED_IN,
+        payload: signUpInfo
+      });
+      alert("Successfully created account client.");
+    })
+    .catch(error => {
+      alert("There was an error creating your account client.");
+      console.log(error);
+    });
+};
+
+export const verifyAccount = (signInInfo, history) => dispatch => {
+  axios
+    .post("http://localhost:3001/users/verifyuser", signInInfo)
+    .then(res => {
+      console.log("push to homepage");
+      dispatch({
+        type: IS_LOGGED_IN,
+        payload: res.data
+      });
+      history.push("/");
+    })
+    .catch(error => {
+      alert("There was an error verify your account client.");
+      console.log(error);
+    });
+};
+
+export const logoutAction = () => {
+  return {
+    type: LOG_OUT
+  };
+};
