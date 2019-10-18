@@ -1,0 +1,24 @@
+import axios from "axios";
+import { UPLOAD_FILE } from "./types";
+
+export const uploadFileAction = file => dispatch => {
+  var formData = new FormData();
+
+  Object.keys(file).forEach(key => {
+    console.log(key + "-" + file[key]);
+    formData.append(key, file[key]);
+  });
+  console.log("============upload action============");
+  console.log(JSON.stringify(formData));
+  console.log("============upload action============");
+
+  axios
+    .post("http://localhost:3001/users/upload", formData)
+    .then(res => {
+      dispatch({
+        type: UPLOAD_FILE,
+        payload: res.data
+      });
+    })
+    .catch(err => console.log(err));
+};

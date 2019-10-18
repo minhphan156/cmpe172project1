@@ -1,8 +1,19 @@
 import { IS_LOGGED_IN, LOG_OUT } from "../actions/types";
 
+// const initialState = {
+//   isLoggedIn: false,
+//   userInfo: null
+// };
+
+//********TODO***make this fake data for development , turn back later */
 const initialState = {
-  isLoggedIn: false,
-  userInfo: null
+  isLoggedIn: true,
+  userInfo: {
+    email: "a",
+    firstname: "a",
+    lastname: "a",
+    password: "a"
+  }
 };
 
 export default function(state = initialState, action) {

@@ -1,6 +1,5 @@
 import axios from "axios";
-import { SIGN_UP, IS_LOGGED_IN, LOG_OUT } from "./types";
-import { Redirect } from "react-router-dom";
+import { IS_LOGGED_IN, LOG_OUT } from "./types";
 export const createAccount = signUpInfo => dispatch => {
   axios
     .post("http://localhost:3001/users/newuser", signUpInfo)

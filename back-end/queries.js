@@ -14,7 +14,11 @@ AWS.config.update({
   accessKeyId: config.accessKeyId,
   secretAccessKey: config.secretAccessKey
 });
-// var s3 = new AWS.S3();
+var s3 = new AWS.S3({
+  endpoint: "s3-eu-central-1.amazonaws.com",
+  signatureVersion: "v4",
+  region: "eu-central-1"
+});
 
 /**
  * createAccount
@@ -103,7 +107,151 @@ const verifyuser = (request, response) => {
     });
 };
 
+const uploadFile = (request, response) => {
+  (async () => {
+    var statusCode = 500;
+    var message = "Unable to add file to database";
+    const client = await pool.connect();
+    // console.log("request.body*****", request.body);
+    if (request.file) {
+      // console.log(request.body.email);
+      // console.log(request.file.originalname);
+      // console.log(request.body.email + "/" + request.file.originalname);
+      const bucketFileName =
+        request.body.email + "/" + request.file.originalname;
+      // console.log(bucketFileName);
+      const params = {
+        Bucket: config.Bucket,
+        Body: request.file.buffer,
+        Key: bucketFileName
+      };
+      // console.log(params.Key);
+      try {
+        const data = await s3.upload(params).promise();
+        if (data) {
+          console.log(
+            "Cover uploaded successfully to location: " + data.Location
+          );
+          const insertFilesText =
+            "INSERT INTO files (description, email, filename) VALUES ($1, $2, $3)";
+
+          const insertFilesValues = [
+            `${request.body.description}`,
+            `${request.body.email}`,
+            `${request.file.originalname}`
+          ];
+
+          await client.query(insertFilesText, insertFilesValues);
+          message = "files meta data is uploaded";
+          statusCode = 200;
+        }
+      } catch (e) {
+        console.log("Error uploading file", e);
+      }
+    }
+    response.status(statusCode).send(message);
+  })().catch(e => {
+    console.log("Unable to connect to database");
+    response.status(500).send("Unable to connect to database");
+  });
+};
+
+const getAllFiles = (request, response) => {
+  (async () => {
+    var statusCode = 500;
+    var message = "Unable to connect to database";
+    const client = await pool.connect();
+    var fullFilesObject = [];
+    try {
+      // Retrieve the files
+
+      let file = [];
+      let params = {
+        Bucket: config.Bucket,
+        Prefix: request.body.email
+      };
+
+      try {
+        const listOfFiles = await s3.listObjectsV2(params).promise();
+        for (let index = 0; index < listOfFiles["Contents"].length; index++) {
+          const fileDirectory = listOfFiles["Contents"][index]["Key"];
+
+          // const paramFile = {
+          //   Bucket: config.Bucket,
+          //   Key: fileDirectory
+          // };
+          // const data = await s3.getObject(paramFile).promise();
+          // if (data) {
+          //   file.push({ [fileDirectory.split("/")[1]]: data.Body });
+          // }
+          const expire = 60 * 60 * 60;
+          const paramFile = {
+            Bucket: config.Bucket,
+            Key: fileDirectory,
+            Expires: expire
+          };
+          const data = await s3.getSignedUrl(
+            "getObject",
+            paramFile,
+            (err, url) => {
+              if (err) {
+                console.log(err);
+              } else {
+                console.log("=============");
+                console.log(url);
+                console.log("=============");
+
+                file.push({ [fileDirectory.split("/")[1]]: url });
+              }
+            }
+          );
+          if (data) {
+            console.log("getSignedUrl-", data);
+            // file.push({ [fileDirectory.split("/")[1]]: data.Body });
+          }
+        }
+      } catch (e) {
+        statusCode = 404;
+        message = "Could not retrieve file from S3";
+        throw new Error(message);
+      }
+      // console.log(file);
+
+      // Retrieve the description
+      const filesTableQuery = "SELECT * FROM files WHERE email = $1";
+      const filesTableQueryValue = [`${request.body.email}`];
+      const filesTableQueryResult = await client.query(
+        filesTableQuery,
+        filesTableQueryValue
+      );
+      // console.log("filesTableQueryResult", filesTableQueryResult.rows);
+      const fileInfoRows = filesTableQueryResult.rows;
+
+      for (let i = 0; i < fileInfoRows.length; i++) {
+        if (Object.keys(file[i])[0] === fileInfoRows[i].filename) {
+          fullFilesObject.push({
+            description: fileInfoRows[i].description,
+            filename: fileInfoRows[i].filename,
+            file: file[i][Object.keys(file[i])[0]]
+          });
+        }
+      }
+      statusCode = 200;
+
+      // console.log("fullFilesObject-", fullFilesObject);
+    } catch (e) {
+      console.log(e);
+    } finally {
+      response.status(statusCode).send(fullFilesObject);
+    }
+  })().catch(e => {
+    console.log("Unable to connect to database");
+    response.status(500).send("Unable to connect to database");
+  });
+};
 module.exports = {
   createAccount,
-  verifyuser
+  verifyuser,
+  uploadFile,
+  getAllFiles
 };

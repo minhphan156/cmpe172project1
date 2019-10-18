@@ -1,16 +1,19 @@
 import React, { Component } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import AppBar from "@material-ui/core/AppBar";
-import { Typography, Toolbar } from "@material-ui/core";
-import { Home, AccountCircle, ShoppingCart } from "@material-ui/icons";
-import IconButton from "@material-ui/core/IconButton";
+import { Toolbar } from "@material-ui/core";
+
+import Card from "@material-ui/core/Card";
+import CardMedia from "@material-ui/core/CardMedia";
+import CardContent from "@material-ui/core/CardContent";
+import CardHeader from "@material-ui/core/CardHeader";
 import { Link } from "react-router-dom";
 import { withRouter } from "react-router-dom";
 import { withStyles } from "@material-ui/core/styles";
 import { connect } from "react-redux";
 import { logoutAction } from "../actions/signUpSignIn";
+import { getAllFilesAction } from "../actions/getAllFiles";
+import Typography from "@material-ui/core/Typography";
 
 const styles = {
   root: {
@@ -19,16 +22,19 @@ const styles = {
 };
 
 class LandingPage extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   handleLogout = () => {
     this.props.logoutAction();
   };
 
+  componentDidMount() {
+    // console.log(
+    //   "this.props.user.userInfo.email-",
+    //   this.props.user.userInfo.email
+    // );
+    this.props.getAllFilesAction(this.props.user.userInfo.email);
+  }
+
   render() {
-    const { classes } = this.props;
     if (this.props.user.isLoggedIn) {
       return (
         <Grid container spacing={3}>
@@ -41,20 +47,42 @@ class LandingPage extends Component {
               position="static"
             >
               <Toolbar>
-                <Link to="/">
-                  <IconButton aria-haspopup="true">
-                    <Home classes={{ root: classes.root }} />
-                  </IconButton>
+                <Typography
+                  variant="h6"
+                  style={{ color: "white", marginLeft: 10 }}
+                >
+                  Hi {this.props.user.userInfo.firstname}!
+                </Typography>
+                <Link
+                  style={{ color: "white", marginLeft: "auto", marginRight: 0 }}
+                  to="/uploadpage"
+                >
+                  Upload Files
                 </Link>
                 <Link
                   onClick={this.handleLogout}
-                  style={{ color: "white" }}
+                  style={{ color: "white", marginLeft: "auto", marginRight: 0 }}
                   to="/signin"
                 >
                   Log out
                 </Link>
               </Toolbar>
             </AppBar>
+          </Grid>
+          <Grid item xs={12}>
+            {this.props.files ? (
+              <div>
+                <Card>file name : {this.props.files[0].filename}</Card>
+                <Card>file description: {this.props.files[0].description}</Card>
+                <Card>
+                  <a target="_parent" href={this.props.files[0].file}>
+                    click to download
+                  </a>
+                </Card>
+              </div>
+            ) : null}
+            {/* <Card>{this.props.files[0].filename}</Card> */}
+            {/* <Card>{this.props.files[0].file.data}</Card> */}
           </Grid>
         </Grid>
       );
@@ -66,10 +94,11 @@ class LandingPage extends Component {
 }
 
 const mapStateToProps = state => ({
-  user: state.user
+  user: state.user,
+  files: state.files.files
 });
 
 export default connect(
   mapStateToProps,
-  { logoutAction }
+  { logoutAction, getAllFilesAction }
 )(withRouter(withStyles(styles)(LandingPage)));
