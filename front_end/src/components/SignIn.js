@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { verifyAccount } from "../actions/signUpSignIn";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
-
+import Facebook from "./Facebook";
 class SignIn extends Component {
   constructor(props) {
     super(props);
@@ -83,7 +83,8 @@ class SignIn extends Component {
             </Button>
           </form>
           <br />
-          Don't have an account? <Link to="/signup">Sign up</Link>
+          Don't have an account? <Link to="/signup">Sign up</Link> or <br />{" "}
+          <Facebook history={this.props.history} />
         </div>
       </div>
     );

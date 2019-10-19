@@ -13,8 +13,12 @@ import { withStyles } from "@material-ui/core/styles";
 import { connect } from "react-redux";
 import { logoutAction } from "../actions/signUpSignIn";
 import { getAllFilesAction } from "../actions/getAllFiles";
-import Typography from "@material-ui/core/Typography";
+import { editFileAction } from "../actions/editFileAction";
+import { deleteFileAction } from "../actions/deleteFileAction";
 
+import Typography from "@material-ui/core/Typography";
+import Button from "@material-ui/core/Button";
+import SignIn from "./SignIn";
 const styles = {
   root: {
     color: "white"
@@ -31,20 +35,57 @@ class LandingPage extends Component {
     //   "this.props.user.userInfo.email-",
     //   this.props.user.userInfo.email
     // );
-    this.props.getAllFilesAction(this.props.user.userInfo.email);
+    // console.log(this.props.user.userInfo);
+    if (this.props.user.userInfo) {
+      this.props.getAllFilesAction(this.props.user.userInfo.email);
+    }
   }
+
+  handleEditFile = file => {
+    this.props.editFileAction(file, this.props.history);
+  };
+  handleDeleteFile = file => {
+    this.props.deleteFileAction(file, this.props.history);
+  };
+  renderFilesList = files => {
+    const temp = files.map(file => {
+      return (
+        <div key={file.filename} style={{ marginTop: 20 }}>
+          <Card>
+            <CardHeader title={file.filename} />
+            <CardContent>File description: {file.description}</CardContent>
+            <CardMedia>
+              <a target="_parent" href={file.url}>
+                click to download
+              </a>
+            </CardMedia>
+            <Button onClick={() => this.handleEditFile(file)}>Edit</Button>
+            <Button onClick={() => this.handleDeleteFile(file)}>
+              Delete File
+            </Button>
+          </Card>
+        </div>
+      );
+    });
+    return temp;
+  };
 
   render() {
     if (this.props.user.isLoggedIn) {
       return (
-        <Grid container spacing={3}>
+        <Grid
+          container
+          direction="column"
+          justify="center"
+          alignItems="center"
+          spacing={3}
+        >
           <Grid item xs={12}>
             <AppBar
               style={{
                 backgroundImage:
                   "linear-gradient(to right, #0c4b78, #3d4e96, #2c76a9)"
               }}
-              position="static"
             >
               <Toolbar>
                 <Typography
@@ -69,20 +110,12 @@ class LandingPage extends Component {
               </Toolbar>
             </AppBar>
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={8}>
             {this.props.files ? (
-              <div>
-                <Card>file name : {this.props.files[0].filename}</Card>
-                <Card>file description: {this.props.files[0].description}</Card>
-                <Card>
-                  <a target="_parent" href={this.props.files[0].file}>
-                    click to download
-                  </a>
-                </Card>
+              <div style={{ marginTop: 50 }}>
+                {this.renderFilesList(this.props.files)}
               </div>
             ) : null}
-            {/* <Card>{this.props.files[0].filename}</Card> */}
-            {/* <Card>{this.props.files[0].file.data}</Card> */}
           </Grid>
         </Grid>
       );
@@ -100,5 +133,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { logoutAction, getAllFilesAction }
+  { logoutAction, getAllFilesAction, editFileAction, deleteFileAction }
 )(withRouter(withStyles(styles)(LandingPage)));

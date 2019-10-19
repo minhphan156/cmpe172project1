@@ -161,7 +161,7 @@ const getAllFiles = (request, response) => {
     var statusCode = 500;
     var message = "Unable to connect to database";
     const client = await pool.connect();
-    var fullFilesObject = [];
+    // var fullFilesObject = [];
     try {
       // Retrieve the files
 
@@ -197,25 +197,26 @@ const getAllFiles = (request, response) => {
               if (err) {
                 console.log(err);
               } else {
-                console.log("=============");
-                console.log(url);
-                console.log("=============");
+                // console.log("=============");
+                // console.log(fileDirectory.split("/")[1]);
+
+                // console.log(url);
+                // console.log("=============");
 
                 file.push({ [fileDirectory.split("/")[1]]: url });
               }
             }
           );
-          if (data) {
-            console.log("getSignedUrl-", data);
-            // file.push({ [fileDirectory.split("/")[1]]: data.Body });
-          }
+          // if (data) {
+          //   // console.log("getSignedUrl-", data);
+          //   // file.push({ [fileDirectory.split("/")[1]]: data.Body });
+          // }
         }
       } catch (e) {
         statusCode = 404;
         message = "Could not retrieve file from S3";
         throw new Error(message);
       }
-      // console.log(file);
 
       // Retrieve the description
       const filesTableQuery = "SELECT * FROM files WHERE email = $1";
@@ -225,33 +226,150 @@ const getAllFiles = (request, response) => {
         filesTableQueryValue
       );
       // console.log("filesTableQueryResult", filesTableQueryResult.rows);
-      const fileInfoRows = filesTableQueryResult.rows;
+      // console.log("file=====", file);
 
-      for (let i = 0; i < fileInfoRows.length; i++) {
-        if (Object.keys(file[i])[0] === fileInfoRows[i].filename) {
-          fullFilesObject.push({
-            description: fileInfoRows[i].description,
-            filename: fileInfoRows[i].filename,
-            file: file[i][Object.keys(file[i])[0]]
-          });
-        }
-      }
+      var fileInfoRows = filesTableQueryResult.rows;
+
+      fileInfoRows.map(fileRow => {
+        file.forEach(item => {
+          if (Object.keys(item)[0] === fileRow.filename) {
+            fileRow.url = item[Object.keys(item)[0]];
+            // console.log("=======================");
+            // console.log(Object.keys(item)[0]);
+            // console.log(fileRow.filename);
+            // console.log(item[Object.keys(item)[0]]);
+            // console.log(fileRow);
+            // console.log("=======================");
+          }
+        });
+      });
+      // console.log("fileInfoRows==", fileInfoRows);
+      // console.log("fullFilesObject==", fullFilesObject);
+      // for (let i = 0; i < fileInfoRows.length; i++) {
+      //   // console.log("=============");
+      //   // console.log(Object.keys(file[i])[0]);
+      //   // console.log(fileInfoRows[i].filename);
+      //   if (Object.keys(file[i])[0] === fileInfoRows[i].filename) {
+      //     fullFilesObject.push({
+      //       description: fileInfoRows[i].description,
+      //       filename: fileInfoRows[i].filename,
+      //       file: file[i][Object.keys(file[i])[0]]
+      //     });
+      //   }
+      // }
+
       statusCode = 200;
 
       // console.log("fullFilesObject-", fullFilesObject);
     } catch (e) {
       console.log(e);
     } finally {
-      response.status(statusCode).send(fullFilesObject);
+      response.status(statusCode).send(fileInfoRows);
     }
   })().catch(e => {
     console.log("Unable to connect to database");
     response.status(500).send("Unable to connect to database");
   });
 };
+
+const deleteFile = (request, response) => {
+  (async () => {
+    console.log(request.body);
+    const client = await pool.connect();
+    try {
+      const deleteFileQuery =
+        "DELETE FROM files WHERE email=$1 AND filename=$2";
+      const deleteFileQueryText = [
+        `${request.body.email}`,
+        `${request.body.filename}`
+      ];
+      await client.query(deleteFileQuery, deleteFileQueryText);
+
+      const params = {
+        Bucket: config.Bucket,
+        Key: request.body.email + "/" + request.body.filename
+      };
+
+      s3.deleteObject(params, function(err, data) {
+        if (err) console.log(err, err.stack);
+        else console.log();
+      });
+
+      response.status(200).send("file is successfully deleted");
+    } catch (e) {
+      console.log(e);
+    }
+  })().catch(e => {
+    console.log("Unable to connect to database");
+    response.status(500).send("Unable to connect to database");
+  });
+};
+
+const editFile = (request, response) => {
+  (async () => {
+    const client = await pool.connect();
+    try {
+      const updateFileQuery =
+        "UPDATE files SET description=$1 WHERE filename=$2 AND email=$3";
+      const updateFileQueryValues = [
+        `${request.body.description}`,
+        `${request.body.filename}`,
+        `${request.body.email}`
+      ];
+      await client.query(updateFileQuery, updateFileQueryValues);
+
+      response.status(200).send("file is updated");
+    } catch (e) {
+      console.log(e);
+    }
+  })().catch(e => {
+    console.log("Unable to connect to database");
+    response.status(500).send("Unable to connect to database");
+  });
+};
+
+const loginWithFacebook = (request, response) => {
+  const searchUnique = "SELECT * FROM users WHERE email=$1";
+
+  const searchValues = [`${request.body.email}`];
+
+  pool.query(searchUnique, searchValues, (searchErr, searchRes) => {
+    if (searchErr) {
+      console.log(searchErr.stack);
+      response.status(500).send("Unable to connect to database.");
+    } else {
+      if (searchRes.rowCount === 0) {
+        const insertText =
+          "INSERT INTO users (email, firstname, lastname, password) VALUES ($1, $2, $3, $4)";
+        const insertValues = [
+          `${request.body.email}`,
+          `${request.body.firstName}`,
+          `${request.body.lastName}`,
+          `${request.body.password}`
+        ];
+
+        pool.query(insertText, insertValues, (insertErr, insertRes) => {
+          if (insertErr) {
+            console.log(insertErr.stack);
+            response.status(500).send("Unable to add user to database.");
+          } else {
+            console.log("Facebook User account created.");
+            response.status(200).send("Facebook User account created.");
+          }
+        });
+      } else {
+        console.log("Username facebook already exists.");
+        response.status(200).send("Username facebook already exists.");
+      }
+    }
+  });
+};
 module.exports = {
   createAccount,
   verifyuser,
   uploadFile,
-  getAllFiles
+  getAllFiles,
+  deleteFile,
+  editFile,
+  loginWithFacebook
 };

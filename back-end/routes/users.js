@@ -8,5 +8,8 @@ router.post("/newuser", db.createAccount);
 router.post("/verifyuser", db.verifyuser);
 router.post("/upload", upload.single("file"), db.uploadFile);
 router.post("/getAllFiles", db.getAllFiles);
+router.post("/deletefile", db.deleteFile);
+router.post("/editfile", db.editFile);
+router.post("/loginWithFacebook", db.loginWithFacebook);
 
 module.exports = router;

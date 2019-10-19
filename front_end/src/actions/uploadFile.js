@@ -1,7 +1,7 @@
 import axios from "axios";
 import { UPLOAD_FILE } from "./types";
 
-export const uploadFileAction = file => dispatch => {
+export const uploadFileAction = (file, history) => dispatch => {
   var formData = new FormData();
 
   Object.keys(file).forEach(key => {
@@ -15,6 +15,7 @@ export const uploadFileAction = file => dispatch => {
   axios
     .post("http://localhost:3001/users/upload", formData)
     .then(res => {
+      history.push("/");
       dispatch({
         type: UPLOAD_FILE,
         payload: res.data

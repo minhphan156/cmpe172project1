@@ -1,21 +1,21 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { FilePond, registerPlugin } from "react-filepond";
-import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orientation";
-import FilePondPluginImagePreview from "filepond-plugin-image-preview";
-import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
-import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
-import "filepond/dist/filepond.min.css";
+// import { FilePond, registerPlugin } from "react-filepond";
+// import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orientation";
+// import FilePondPluginImagePreview from "filepond-plugin-image-preview";
+// import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
+// import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
+// import "filepond/dist/filepond.min.css";
 import { withStyles } from "@material-ui/core/styles";
 import { Button, TextField } from "@material-ui/core";
 
-import { uploadFileAction } from "../actions/uploadFile";
+import { editFileAction, editFileDataBase } from "../actions/editFileAction";
 
-registerPlugin(
-  FilePondPluginFileValidateType,
-  FilePondPluginImageExifOrientation,
-  FilePondPluginImagePreview
-);
+// registerPlugin(
+//   FilePondPluginFileValidateType,
+//   FilePondPluginImageExifOrientation,
+//   FilePondPluginImagePreview
+// );
 
 const styles = theme => ({
   root: {
@@ -28,18 +28,25 @@ const styles = theme => ({
   }
 });
 
-class UploadPage extends Component {
+class EditFile extends Component {
   constructor() {
     super();
     this.state = {
-      description: "",
+      description: null,
       file: null,
       isSubmit: false
     };
     this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
+    // this.handleInit = this.handleInit.bind(this);
+  }
 
-    this.handleInit = this.handleInit.bind(this);
+  componentDidMount() {
+    // console.log("edit file ");
+    if (this.props.fileEdit) {
+      //   console.log("edit file inside if");
+      this.setState({ description: this.props.fileEdit.description });
+    }
   }
 
   onChange(e) {
@@ -48,20 +55,26 @@ class UploadPage extends Component {
 
   onSubmit(e) {
     e.preventDefault();
-    const uploadData = {
+    const editData = {
       description: this.state.description,
-      file: this.state.file[0],
+      filename: this.props.fileEdit.filename,
+      //   file: this.state.file[0],
       email: this.props.user.userInfo.email
     };
     this.setState({ isSubmit: true });
-    this.props.uploadFileAction(uploadData, this.props.history);
+    this.props.editFileDataBase(editData, this.props.history);
+    // this.props.history.push("/");
   }
 
-  handleInit() {
-    console.log("FilePond instance has initialised", this.pond);
-  }
+  //   handleInit() {
+  //     console.log("FilePond instance has initialised", this.pond);
+  //   }
 
   render() {
+    const { fileEdit } = this.props;
+    console.log("fileEdit=", fileEdit);
+    console.log("fileEdit state=", this.state.description);
+
     return (
       <div
         style={{
@@ -82,7 +95,7 @@ class UploadPage extends Component {
               "linear-gradient(to right, #0c4b78, #3d4e96, #2c76a9)"
           }}
         >
-          <h2>Upload Files</h2>
+          <h2>Edit Files</h2>
         </div>
 
         <form
@@ -103,7 +116,7 @@ class UploadPage extends Component {
             multiline
           />
 
-          <FilePond
+          {/* <FilePond
             ref={ref => (this.pond = ref)}
             files={this.state.file}
             allowMultiple={true}
@@ -114,14 +127,14 @@ class UploadPage extends Component {
                 file: fileItems.map(fileItem => fileItem.file)
               });
             }}
-          />
+          /> */}
           <Button
             type="submit"
             variant="contained"
             color="default"
             style={{ marginTop: 10, marginBottom: 15 }}
           >
-            Upload
+            Submit Edit
           </Button>
         </form>
       </div>
@@ -130,11 +143,11 @@ class UploadPage extends Component {
 }
 
 const mapStateToProps = state => ({
-  upload: state.upload,
+  fileEdit: state.fileEdit.fileEdit,
   user: state.user
 });
 
 export default connect(
   mapStateToProps,
-  { uploadFileAction }
-)(withStyles(styles, { withTheme: true })(UploadPage));
+  { editFileAction, editFileDataBase }
+)(withStyles(styles, { withTheme: true })(EditFile));

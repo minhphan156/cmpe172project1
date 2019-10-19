@@ -34,8 +34,7 @@ class SignUp extends Component {
       email: this.state.email
     };
     console.log("handlesubmit Sign up");
-    this.props.createAccount(signUpInfo);
-    this.props.history.push("/");
+    this.props.createAccount(signUpInfo, this.props.history);
 
     event.preventDefault();
   };
