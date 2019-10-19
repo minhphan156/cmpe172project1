@@ -2,7 +2,6 @@ import { GET_ALL_FILE } from "./types";
 import axios from "axios";
 
 export const getAllFilesAction = email => dispatch => {
-  console.log("getAllFilesAction-email-", email);
   axios
     .post("http://localhost:3001/users/getAllFiles", { email })
     .then(res => {

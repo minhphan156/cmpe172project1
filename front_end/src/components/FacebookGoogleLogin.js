@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 import FacebookLogin from "react-facebook-login";
 import { connect } from "react-redux";
-import { loginWithFacebook } from "../actions/loginWithFacebook";
 import { GoogleLogin } from "react-google-login";
 
-class Facebook extends Component {
+import { loginWithFacebookGoogle } from "../actions/loginWithFacebookGoogle";
+
+class FacebookGoogleLogin extends Component {
   state = {
     isLoggedIn: false,
     userID: "",
@@ -16,14 +17,8 @@ class Facebook extends Component {
   componentClicked = () => console.log("clicked");
 
   responseFacebook = response => {
+    console.log("facebook login response");
     console.log(response);
-    // this.setState({
-    //   isLoggedIn: true,
-    //   userID: response.userID,
-    //   name: response.name,
-    //   email: response.email,
-    //   picture: response.picture.data.url
-    // });
     var firstName = response.name
       .split(" ")
       .slice(0, -1)
@@ -32,8 +27,6 @@ class Facebook extends Component {
       .split(" ")
       .slice(-1)
       .join(" ");
-    console.log(firstName);
-    console.log(lastName);
 
     const loginData = {
       firstName: firstName,
@@ -41,47 +34,24 @@ class Facebook extends Component {
       email: response.email,
       password: "facebooklogin"
     };
-    this.props.loginWithFacebook(loginData, this.props.history);
+    this.props.loginWithFacebookGoogle(loginData, this.props.history);
   };
 
   responseGoogle = response => {
-    console.log("================");
-    console.log(response);
-    // console.log(response.WE);
-    // console.log(response.w3.U3);
-    // console.log(response.w3.ofa);
-    // console.log(response.w3.wea);
-
-    // this.setState({
-    //   isLoggedIn: true,
-    //   userID: response.userID,
-    //   name: response.name,
-    //   email: response.email,
-    //   picture: response.picture.data.url
-    // });
-    // var firstName = response.name
-    //   .split(" ")
-    //   .slice(0, -1)
-    //   .join(" ");
-    // var lastName = response.name
-    //   .split(" ")
-    //   .slice(-1)
-    //   .join(" ");
-    // console.log(firstName);
-    // console.log(lastName);
-
+    console.log("google login response");
     const loginData = {
       firstName: response.w3.ofa,
       lastName: response.w3.wea,
       email: response.w3.U3,
       password: "googlelogin"
     };
-    this.props.loginWithFacebook(loginData, this.props.history);
+    this.props.loginWithFacebookGoogle(loginData, this.props.history);
   };
 
   onFailure = error => {
-    alert(error);
+    console.log("google login error ", error);
   };
+
   render() {
     let fbContent;
     if (this.state.isLoggedIn) {
@@ -91,7 +61,7 @@ class Facebook extends Component {
         <div>
           <FacebookLogin
             appId="3146580042050394"
-            autoLoad={true}
+            autoLoad={false}
             fields="name,email,picture"
             onClick={this.componentClicked}
             callback={this.responseFacebook}
@@ -113,5 +83,5 @@ const mapStateToProps = state => ({});
 
 export default connect(
   mapStateToProps,
-  { loginWithFacebook }
-)(Facebook);
+  { loginWithFacebookGoogle }
+)(FacebookGoogleLogin);

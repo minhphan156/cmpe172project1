@@ -18,7 +18,6 @@ import { deleteFileAction } from "../actions/deleteFileAction";
 
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
-import SignIn from "./SignIn";
 const styles = {
   root: {
     color: "white"
@@ -29,6 +28,12 @@ class LandingPage extends Component {
   handleLogout = () => {
     this.props.logoutAction();
   };
+
+  componentWillMount() {
+    if (!this.props.user.isLoggedIn) {
+      this.props.history.push("/signin");
+    }
+  }
 
   componentDidMount() {
     // console.log(
@@ -120,7 +125,7 @@ class LandingPage extends Component {
         </Grid>
       );
     } else {
-      this.props.history.push("/signin");
+      // this.props.history.push("/signin");
       return <div></div>;
     }
   }

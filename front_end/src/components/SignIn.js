@@ -1,10 +1,12 @@
 import React, { Component } from "react";
 import { Button, TextField } from "@material-ui/core";
 import { Link } from "react-router-dom";
-import { verifyAccount } from "../actions/signUpSignIn";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
-import Facebook from "./Facebook";
+import FacebookGoogleLogin from "./FacebookGoogleLogin";
+
+import { verifyAccount } from "../actions/signUpSignIn";
+
 class SignIn extends Component {
   constructor(props) {
     super(props);
@@ -83,8 +85,8 @@ class SignIn extends Component {
             </Button>
           </form>
           <br />
-          Don't have an account? <Link to="/signup">Sign up</Link> or <br />{" "}
-          <Facebook history={this.props.history} />
+          Don't have an account? <Link to="/signup">Sign up</Link>
+          <br /> or <br /> <FacebookGoogleLogin history={this.props.history} />
         </div>
       </div>
     );

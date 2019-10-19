@@ -1,10 +1,11 @@
 import axios from "axios";
 import { IS_LOGGED_IN, LOG_OUT } from "./types";
-export const createAccount = signUpInfo => dispatch => {
+export const createAccount = (signUpInfo, history) => dispatch => {
   axios
     .post("http://localhost:3001/users/newuser", signUpInfo)
     .then(res => {
-      console.log(res);
+      console.log("new account created ", res);
+      history.push("/");
       dispatch({
         type: IS_LOGGED_IN,
         payload: signUpInfo

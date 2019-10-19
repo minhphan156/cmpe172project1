@@ -8,7 +8,7 @@ import LandingPage from "./landingPage";
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
 import EditFile from "./EditFile";
-import Facebook from "./Facebook";
+import Facebook from "./FacebookGoogleLogin";
 class Main extends Component {
   render() {
     return (

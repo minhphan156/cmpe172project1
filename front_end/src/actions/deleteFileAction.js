@@ -1,4 +1,3 @@
-import { DELETE_FILE } from "./types";
 import axios from "axios";
 import { getAllFilesAction } from "./getAllFiles";
 export const deleteFileAction = (file, history) => dispatch => {
