@@ -1,4 +1,8 @@
-import { IS_LOGGED_IN, LOG_OUT } from "../actions/types";
+import {
+  IS_LOGGED_IN,
+  LOG_OUT,
+  ADMIN_SIGNIN_GET_FILES
+} from "../actions/types";
 
 const initialState = {
   isLoggedIn: false,
@@ -22,6 +26,12 @@ export default function(state = initialState, action) {
       return { ...state, isLoggedIn: true, userInfo: action.payload };
     case LOG_OUT:
       return { ...state, isLoggedIn: false, userInfo: null };
+    case ADMIN_SIGNIN_GET_FILES:
+      return {
+        ...state,
+        isLoggedIn: true,
+        userInfo: { firstname: "adminpanel@gmail.com" }
+      };
     default:
       return state;
   }

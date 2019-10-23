@@ -77,6 +77,11 @@ const createAccount = (request, response) => {
 };
 
 const verifyuser = (request, response) => {
+  // const email = request.body.email;
+  // const password = request.body.password;
+  // if (email === "adminpanel@gmail.com" && password === "adminminhphan172") {
+  // } else {
+  // }
   const queryGetUser =
     "SELECT email, firstname, lastname, password FROM users WHERE email=$1 AND password=$2 ";
   const queryGetUserValue = [
@@ -161,10 +166,8 @@ const getAllFiles = (request, response) => {
     var statusCode = 500;
     var message = "Unable to connect to database";
     const client = await pool.connect();
-    // var fullFilesObject = [];
     try {
       // Retrieve the files
-
       let file = [];
       let params = {
         Bucket: config.Bucket,
@@ -175,15 +178,6 @@ const getAllFiles = (request, response) => {
         const listOfFiles = await s3.listObjectsV2(params).promise();
         for (let index = 0; index < listOfFiles["Contents"].length; index++) {
           const fileDirectory = listOfFiles["Contents"][index]["Key"];
-
-          // const paramFile = {
-          //   Bucket: config.Bucket,
-          //   Key: fileDirectory
-          // };
-          // const data = await s3.getObject(paramFile).promise();
-          // if (data) {
-          //   file.push({ [fileDirectory.split("/")[1]]: data.Body });
-          // }
           const expire = 60 * 60 * 60;
           const paramFile = {
             Bucket: config.Bucket,
@@ -197,20 +191,10 @@ const getAllFiles = (request, response) => {
               if (err) {
                 console.log(err);
               } else {
-                // console.log("=============");
-                // console.log(fileDirectory.split("/")[1]);
-
-                // console.log(url);
-                // console.log("=============");
-
                 file.push({ [fileDirectory.split("/")[1]]: url });
               }
             }
           );
-          // if (data) {
-          //   // console.log("getSignedUrl-", data);
-          //   // file.push({ [fileDirectory.split("/")[1]]: data.Body });
-          // }
         }
       } catch (e) {
         statusCode = 404;
@@ -225,42 +209,15 @@ const getAllFiles = (request, response) => {
         filesTableQuery,
         filesTableQueryValue
       );
-      // console.log("filesTableQueryResult", filesTableQueryResult.rows);
-      // console.log("file=====", file);
-
       var fileInfoRows = filesTableQueryResult.rows;
-
       fileInfoRows.map(fileRow => {
         file.forEach(item => {
           if (Object.keys(item)[0] === fileRow.filename) {
             fileRow.url = item[Object.keys(item)[0]];
-            // console.log("=======================");
-            // console.log(Object.keys(item)[0]);
-            // console.log(fileRow.filename);
-            // console.log(item[Object.keys(item)[0]]);
-            // console.log(fileRow);
-            // console.log("=======================");
           }
         });
       });
-      // console.log("fileInfoRows==", fileInfoRows);
-      // console.log("fullFilesObject==", fullFilesObject);
-      // for (let i = 0; i < fileInfoRows.length; i++) {
-      //   // console.log("=============");
-      //   // console.log(Object.keys(file[i])[0]);
-      //   // console.log(fileInfoRows[i].filename);
-      //   if (Object.keys(file[i])[0] === fileInfoRows[i].filename) {
-      //     fullFilesObject.push({
-      //       description: fileInfoRows[i].description,
-      //       filename: fileInfoRows[i].filename,
-      //       file: file[i][Object.keys(file[i])[0]]
-      //     });
-      //   }
-      // }
-
       statusCode = 200;
-
-      // console.log("fullFilesObject-", fullFilesObject);
     } catch (e) {
       console.log(e);
     } finally {
@@ -364,6 +321,96 @@ const loginWithFacebook = (request, response) => {
     }
   });
 };
+
+const adminGetAllFiles = (request, response) => {
+  (async () => {
+    const email = request.body.email;
+    const password = request.body.password;
+    console.log(email);
+    console.log(password);
+
+    if (email === "adminpanel@gmail.com" && password === "adminminhphan172") {
+      const client = await pool.connect();
+      try {
+        //get all files from s3
+        let file = [];
+        let params = {
+          Bucket: config.Bucket
+        };
+
+        // try {
+        const listOfFiles = await s3.listObjectsV2(params).promise();
+        // console.log("listOfFiles all-", listOfFiles["Contents"]);
+
+        for (let index = 0; index < listOfFiles["Contents"].length; index++) {
+          const fileDirectory = listOfFiles["Contents"][index]["Key"];
+          const expire = 60 * 60 * 60;
+          const paramFile = {
+            Bucket: config.Bucket,
+            Key: fileDirectory,
+            Expires: expire
+          };
+          // const data = await s3.getSignedUrl(
+          //   "getObject",
+          //   paramFile,
+          //   (err, url) => {
+          //     if (err) {
+          //       console.log(err);
+          //     } else {
+          //       // console.log('[fileDirectory.split("/")[1]]----', [
+          //       //   fileDirectory.split("/")[1]
+          //       // ]);
+          //       // console.log("url---", url);
+          //       file.push({ [fileDirectory.split("/")[1]]: url });
+          //     }
+          //   }
+          // );
+        }
+        // console.log("file--1---", file);
+
+        // } catch (e) {
+        //   statusCode = 404;
+        //   message = "Could not retrieve file from S3";
+        //   throw new Error(message);
+        // }
+        // get files info
+        const getAllFilesInfoQuery = "SELECT * FROM files";
+        const getAllFilesInfoQueryResults = await client.query(
+          getAllFilesInfoQuery
+        );
+        // console.log(
+        //   "getAllFilesInfoQueryResults",
+        //   getAllFilesInfoQueryResults.rows
+        // );
+        // console.log("file---2--", file);
+
+        // combine file info and s3 urls
+        var fileInfoRows = getAllFilesInfoQueryResults.rows;
+        fileInfoRows.map(fileRow => {
+          file.forEach(item => {
+            // console.log("Object.keys(item)[0]-----", Object.keys(item)[0]);
+            // console.log("fileRow.filename-----", fileRow.filename);
+
+            if (Object.keys(item)[0] === fileRow.filename) {
+              fileRow.url = item[Object.keys(item)[0]];
+            }
+          });
+        });
+        // console.log("file--3---", file);
+
+        // console.log("fileInfoRows---", fileInfoRows);
+        response.status(200).send(fileInfoRows);
+      } catch (e) {
+        console.log(e);
+      }
+    } else {
+      response.status(401).send("invalid admin username or password");
+    }
+  })().catch(e => {
+    console.log("Unable to connect to database");
+    response.status(500).send("Unable to connect to database");
+  });
+};
 module.exports = {
   createAccount,
   verifyuser,
@@ -371,5 +418,6 @@ module.exports = {
   getAllFiles,
   deleteFile,
   editFile,
-  loginWithFacebook
+  loginWithFacebook,
+  adminGetAllFiles
 };

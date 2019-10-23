@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import { withRouter } from "react-router-dom";
 import { withStyles } from "@material-ui/core/styles";
 import { connect } from "react-redux";
+
 import { logoutAction } from "../actions/signUpSignIn";
 import { getAllFilesAction } from "../actions/getAllFiles";
 import { editFileAction } from "../actions/editFileAction";
@@ -36,11 +37,6 @@ class LandingPage extends Component {
   }
 
   componentDidMount() {
-    // console.log(
-    //   "this.props.user.userInfo.email-",
-    //   this.props.user.userInfo.email
-    // );
-    // console.log(this.props.user.userInfo);
     if (this.props.user.userInfo) {
       this.props.getAllFilesAction(this.props.user.userInfo.email);
     }

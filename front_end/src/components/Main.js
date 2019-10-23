@@ -7,15 +7,17 @@ import UploadPage from "./UploadPage";
 import LandingPage from "./landingPage";
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
+import AdminSignInPage from "./AdminSignInPage";
 import EditFile from "./EditFile";
-import Facebook from "./FacebookGoogleLogin";
+import AdminPage from "./AdminPage";
 class Main extends Component {
   render() {
     return (
       <Provider store={store}>
         <Router>
           <Route exact path="/" component={LandingPage} />
-          <Route exact path="/facebook" component={Facebook} />
+          <Route exact path="/adminpage" component={AdminPage} />
+          <Route exact path="/AdminSignInPage" component={AdminSignInPage} />
           <Route exact path="/signin" component={SignIn} />
           <Route exact path="/signup" component={SignUp} />
           <Route exact path="/uploadpage" component={UploadPage} />

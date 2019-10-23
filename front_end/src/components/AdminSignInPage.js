@@ -3,16 +3,16 @@ import { Button, TextField } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
-import FacebookGoogleLogin from "./FacebookGoogleLogin";
 
-import { verifyAccount } from "../actions/signUpSignIn";
+import { adminGetAllFilesAction } from "../actions/getAllFiles";
 
-class SignIn extends Component {
+class AdminSignInPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      email: "",
-      password: ""
+      //REMOVE WHEN DONE DEVELOPMENT
+      email: "adminpanel@gmail.com",
+      password: "adminminhphan172"
     };
     this.handleSubmit = this.handleSubmit.bind(this);
   }
@@ -32,7 +32,7 @@ class SignIn extends Component {
       email: this.state.email
     };
     console.log("handlesubmit Sign in");
-    this.props.verifyAccount(signInInfo, this.props.history);
+    this.props.adminGetAllFilesAction(signInInfo, this.props.history);
 
     event.preventDefault();
   };
@@ -84,11 +84,6 @@ class SignIn extends Component {
               Sign In
             </Button>
           </form>
-          <br />
-          Don't have an account? <Link to="/signup">Sign up</Link>
-          <br /> or <Link to="/AdminSignInPage">Admin SignIn Page</Link>
-          <br /> or
-          <br /> <FacebookGoogleLogin history={this.props.history} />
         </div>
       </div>
     );
@@ -98,5 +93,5 @@ const mapStateToProps = state => ({});
 
 export default connect(
   mapStateToProps,
-  { verifyAccount }
-)(withRouter(SignIn));
+  { adminGetAllFilesAction }
+)(withRouter(AdminSignInPage));

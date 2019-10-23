@@ -11,5 +11,6 @@ router.post("/getAllFiles", db.getAllFiles);
 router.post("/deletefile", db.deleteFile);
 router.post("/editfile", db.editFile);
 router.post("/loginWithFacebook", db.loginWithFacebook);
+router.post("/adminGetAllFiles", db.adminGetAllFiles);
 
 module.exports = router;

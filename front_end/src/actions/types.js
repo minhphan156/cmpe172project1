@@ -5,3 +5,4 @@ export const UPLOAD_FILE = "UPLOAD_FILE";
 export const GET_ALL_FILE = "GET_ALL_FILE";
 export const EDIT_FILE = "EDIT_FILE";
 export const DELETE_FILE = "DELETE_FILE";
+export const ADMIN_SIGNIN_GET_FILES = "ADMIN_SIGNIN_GET_FILES";
