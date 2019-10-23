@@ -334,8 +334,6 @@ const adminGetAllFiles = (request, response) => {
     const email = request.body.email;
     const password = request.body.password;
     console.log(email);
-    console.log(password);
-
     if (email === "adminpanel@gmail.com" && password === "adminminhphan172") {
       const client = await pool.connect();
       try {
@@ -344,12 +342,12 @@ const adminGetAllFiles = (request, response) => {
         let params = {
           Bucket: config.Bucket
         };
-
-        // try {
         const listOfFiles = await s3.listObjectsV2(params).promise();
+        console.log("listOfFiles");
         // console.log("listOfFiles all-", listOfFiles["Contents"]);
 
         for (let index = 0; index < listOfFiles["Contents"].length; index++) {
+          console.log("fileDirectory");
           const fileDirectory = listOfFiles["Contents"][index]["Key"];
           const expire = 60 * 60 * 60;
           const paramFile = {
@@ -357,34 +355,30 @@ const adminGetAllFiles = (request, response) => {
             Key: fileDirectory,
             Expires: expire
           };
-          // const data = await s3.getSignedUrl(
-          //   "getObject",
-          //   paramFile,
-          //   (err, url) => {
-          //     if (err) {
-          //       console.log(err);
-          //     } else {
-          //       // console.log('[fileDirectory.split("/")[1]]----', [
-          //       //   fileDirectory.split("/")[1]
-          //       // ]);
-          //       // console.log("url---", url);
-          //       file.push({ [fileDirectory.split("/")[1]]: url });
-          //     }
-          //   }
-          // );
+          const data = await s3.getSignedUrl(
+            "getObject",
+            paramFile,
+            (err, url) => {
+              if (err) {
+                console.log(err);
+              } else {
+                console.log("url");
+                // console.log('[fileDirectory.split("/")[1]]----', [
+                //   fileDirectory.split("/")[1]
+                // ]);
+                // console.log("url---", url);
+                file.push({ [fileDirectory.split("/")[1]]: url });
+              }
+            }
+          );
         }
         // console.log("file--1---", file);
-
-        // } catch (e) {
-        //   statusCode = 404;
-        //   message = "Could not retrieve file from S3";
-        //   throw new Error(message);
-        // }
         // get files info
         const getAllFilesInfoQuery = "SELECT * FROM files";
         const getAllFilesInfoQueryResults = await client.query(
           getAllFilesInfoQuery
         );
+        console.log("getAllFilesInfoQueryResults");
         // console.log(
         //   "getAllFilesInfoQueryResults",
         //   getAllFilesInfoQueryResults.rows
@@ -397,7 +391,7 @@ const adminGetAllFiles = (request, response) => {
           file.forEach(item => {
             // console.log("Object.keys(item)[0]-----", Object.keys(item)[0]);
             // console.log("fileRow.filename-----", fileRow.filename);
-
+            console.log("fileInfoRows");
             if (Object.keys(item)[0] === fileRow.filename) {
               fileRow.url = item[Object.keys(item)[0]];
             }

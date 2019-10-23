@@ -1,4 +1,8 @@
-import { GET_ALL_FILE, ADMIN_SIGNIN_GET_FILES } from "../actions/types";
+import {
+  GET_ALL_FILE,
+  ADMIN_SIGNIN_GET_FILES,
+  LOG_OUT
+} from "../actions/types";
 
 const initialState = {
   files: null
@@ -17,6 +21,12 @@ export default function(state = initialState, action) {
       return {
         ...state,
         files: action.payload
+      };
+    case LOG_OUT:
+      console.log("Admin get all files reducer ", action.payload);
+      return {
+        ...state,
+        files: null
       };
     default:
       return state;

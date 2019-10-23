@@ -1,39 +1,38 @@
 import React, { Component } from "react";
 import { Button, TextField } from "@material-ui/core";
-import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
-
 import { adminGetAllFilesAction } from "../actions/getAllFiles";
+import { logoutAction } from "../actions/signUpSignIn";
 
 class AdminSignInPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      //REMOVE WHEN DONE DEVELOPMENT
+      //TODO: REMOVE WHEN DONE DEVELOPMENT
       email: "adminpanel@gmail.com",
       password: "adminminhphan172"
     };
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
+  componentWillMount() {
+    this.props.logoutAction();
+  }
+
   handleSignInFormChange = e => {
     this.setState({
       [e.target.name]: e.target.value
     });
-    // console.log(this.state);
   };
 
   handleSubmit = event => {
     event.preventDefault();
-
     const signInInfo = {
       password: this.state.password,
       email: this.state.email
     };
-    console.log("handlesubmit Sign in");
     this.props.adminGetAllFilesAction(signInInfo, this.props.history);
-
     event.preventDefault();
   };
 
@@ -48,7 +47,15 @@ class AdminSignInPage extends Component {
             width: "30%"
           }}
         >
-          <h2>Sign In</h2>
+          <h2
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center"
+            }}
+          >
+            Sign In
+          </h2>
           <form
             style={{
               display: "flex",
@@ -93,5 +100,5 @@ const mapStateToProps = state => ({});
 
 export default connect(
   mapStateToProps,
-  { adminGetAllFilesAction }
+  { adminGetAllFilesAction, logoutAction }
 )(withRouter(AdminSignInPage));

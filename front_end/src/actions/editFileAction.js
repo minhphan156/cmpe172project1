@@ -12,7 +12,8 @@ export const editFileDataBase = (file, history) => dispatch => {
   axios
     .post("http://localhost:3001/users/editfile", file)
     .then(res => {
-      //   dispatch(getAllFilesAction(file.email));
+      // dispatch(getAllFilesAction(file.email));
+      console.log("file edited successfully");
       history.push("/");
     })
     .catch(error => {

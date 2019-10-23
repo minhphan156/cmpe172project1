@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import FacebookLogin from "react-facebook-login";
 import { connect } from "react-redux";
 import { GoogleLogin } from "react-google-login";
-
 import { loginWithFacebookGoogle } from "../actions/loginWithFacebookGoogle";
 
 class FacebookGoogleLogin extends Component {
@@ -58,20 +57,30 @@ class FacebookGoogleLogin extends Component {
       fbContent = null;
     } else {
       fbContent = (
-        <div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center"
+          }}
+        >
           <FacebookLogin
+            style={{ borderRadius: 2 }}
             appId="3146580042050394"
             autoLoad={false}
             fields="name,email,picture"
             onClick={this.componentClicked}
             callback={this.responseFacebook}
           />
+          <br />
           <GoogleLogin
+            style={{ width: 242 }}
             clientId="457180824943-lv16voqfvsiurmjcesmbp6qq9t9iv03o.apps.googleusercontent.com"
             buttonText="Login"
             onSuccess={this.responseGoogle}
             onFailure={this.onFailure}
           />
+          <br />
         </div>
       );
     }

@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import FacebookGoogleLogin from "./FacebookGoogleLogin";
-
 import { verifyAccount } from "../actions/signUpSignIn";
 
 class SignIn extends Component {
@@ -21,75 +20,94 @@ class SignIn extends Component {
     this.setState({
       [e.target.name]: e.target.value
     });
-    // console.log(this.state);
   };
 
   handleSubmit = event => {
     event.preventDefault();
-
     const signInInfo = {
       password: this.state.password,
       email: this.state.email
     };
-    console.log("handlesubmit Sign in");
     this.props.verifyAccount(signInInfo, this.props.history);
-
     event.preventDefault();
   };
 
   render() {
     return (
-      <div className="signin">
-        <div
+      <div
+        style={{
+          marginLeft: "auto",
+          marginRight: "auto",
+          marginTop: "10%",
+          width: "30%"
+        }}
+      >
+        <form
           style={{
-            marginLeft: "auto",
-            marginRight: "auto",
-            marginTop: "10%",
-            width: "30%"
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center"
           }}
+          onSubmit={this.handleSubmit}
         >
-          <h2>Sign In</h2>
-          <form
+          <h2
             style={{
               display: "flex",
-              flexDirection: "column"
+              flexDirection: "column",
+              alignItems: "center"
             }}
-            onSubmit={this.handleSubmit}
           >
-            <TextField
-              id="outlined-email"
-              value={this.state.email}
-              onChange={this.handleSignInFormChange}
-              name="email"
-              label="email"
-              margin="normal"
-              variant="outlined"
-            />
-            <TextField
-              id="outlined-password"
-              type="password"
-              value={this.state.password}
-              onChange={this.handleSignInFormChange}
-              name="password"
-              label="Password"
-              margin="normal"
-              variant="outlined"
-            />
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              style={{ marginTop: 10, marginBottom: 15 }}
+            Sign In
+          </h2>
+
+          <TextField
+            id="outlined-email"
+            value={this.state.email}
+            onChange={this.handleSignInFormChange}
+            name="email"
+            label="email"
+            margin="normal"
+            variant="outlined"
+          />
+          <TextField
+            id="outlined-password"
+            type="password"
+            value={this.state.password}
+            onChange={this.handleSignInFormChange}
+            name="password"
+            label="Password"
+            margin="normal"
+            variant="outlined"
+          />
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            style={{ marginTop: 10, marginBottom: 15 }}
+          >
+            Sign in
+          </Button>
+
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center"
+            }}
+          >
+            <FacebookGoogleLogin history={this.props.history} />
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center"
+              }}
             >
-              Sign In
-            </Button>
-          </form>
-          <br />
-          Don't have an account? <Link to="/signup">Sign up</Link>
-          <br /> or <Link to="/AdminSignInPage">Admin SignIn Page</Link>
-          <br /> or
-          <br /> <FacebookGoogleLogin history={this.props.history} />
-        </div>
+              <Link to="/signup"> Sign up</Link> <br />
+              <Link to="/AdminSignInPage"> Admin Sign in Page</Link>
+            </div>
+          </div>
+        </form>
       </div>
     );
   }
