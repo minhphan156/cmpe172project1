@@ -55,6 +55,9 @@ class LandingPage extends Component {
           <Card>
             <CardHeader title={file.filename} />
             <CardContent>File description: {file.description}</CardContent>
+            <CardContent>File uploadtime: {file.uploadtime}</CardContent>
+            <CardContent>File updatedtime: {file.updatedtime}</CardContent>
+
             <CardMedia>
               <a target="_parent" href={file.url}>
                 click to download

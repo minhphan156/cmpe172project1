@@ -137,13 +137,17 @@ const uploadFile = (request, response) => {
           console.log(
             "Cover uploaded successfully to location: " + data.Location
           );
+          const date = new Date().toLocaleString();
+          console.log("date", date);
           const insertFilesText =
-            "INSERT INTO files (description, email, filename) VALUES ($1, $2, $3)";
+            "INSERT INTO files (description, email, filename, uploadtime, updatedtime) VALUES ($1, $2, $3, $4, $5)";
 
           const insertFilesValues = [
             `${request.body.description}`,
             `${request.body.email}`,
-            `${request.file.originalname}`
+            `${request.file.originalname}`,
+            `${date}`,
+            `${date}`
           ];
 
           await client.query(insertFilesText, insertFilesValues);
@@ -266,10 +270,13 @@ const editFile = (request, response) => {
   (async () => {
     const client = await pool.connect();
     try {
+      const date = new Date().toLocaleString();
+
       const updateFileQuery =
-        "UPDATE files SET description=$1 WHERE filename=$2 AND email=$3";
+        "UPDATE files SET description=$1, updatedtime=$2 WHERE filename=$3 AND email=$4";
       const updateFileQueryValues = [
         `${request.body.description}`,
+        `${date}`,
         `${request.body.filename}`,
         `${request.body.email}`
       ];

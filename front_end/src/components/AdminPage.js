@@ -48,6 +48,8 @@ class AdminPage extends Component {
 
             <CardContent>File email: {file.email}</CardContent>
             <CardContent>File description: {file.description}</CardContent>
+            <CardContent>File uploadtime: {file.uploadtime}</CardContent>
+            <CardContent>File updatedtime: {file.updatedtime}</CardContent>
             {/* <CardMedia>
               <a target="_parent" href={file.url}>
                 click to download
