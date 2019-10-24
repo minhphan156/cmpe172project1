@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "nodemon --exec babel-node ./bin/www",
-    "build": "babel app.js --out-file app.compiled.js"
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix front_end && npm run build --prefix front_end"
   },
   "dependencies": {
     "aws-sdk": "^2.550.0",
