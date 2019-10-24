@@ -19,6 +19,9 @@ var express = require("express");
 //     res.sendFile(path.resolve(__dirname, "front_end", "build", "index.html"));
 //   });
 // }
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname + "/../front_end/build/index.html"));
+});
 var port = normalizePort(process.env.PORT || "8081");
 app.set("port", port);
 
