@@ -132,6 +132,8 @@ const uploadFile = (request, response) => {
       };
       // console.log(params.Key);
       try {
+        await client.query("BEGIN");
+
         const data = await s3.upload(params).promise();
         if (data) {
           console.log(
@@ -154,8 +156,13 @@ const uploadFile = (request, response) => {
           message = "files meta data is uploaded";
           statusCode = 200;
         }
+        await client.query("COMMIT");
       } catch (e) {
+        await client.query("ROLLBACK");
+
         console.log("Error uploading file", e);
+      } finally {
+        client.release();
       }
     }
     response.status(statusCode).send(message);
@@ -171,6 +178,8 @@ const getAllFiles = (request, response) => {
     var message = "Unable to connect to database";
     const client = await pool.connect();
     try {
+      await client.query("BEGIN");
+
       // Retrieve the files
       let file = [];
       let params = {
@@ -221,8 +230,12 @@ const getAllFiles = (request, response) => {
           }
         });
       });
+      await client.query("COMMIT");
+
       statusCode = 200;
     } catch (e) {
+      await client.query("ROLLBACK");
+
       console.log(e);
     } finally {
       response.status(statusCode).send(fileInfoRows);
@@ -238,6 +251,8 @@ const deleteFile = (request, response) => {
     console.log(request.body);
     const client = await pool.connect();
     try {
+      await client.query("BEGIN");
+
       const deleteFileQuery =
         "DELETE FROM files WHERE email=$1 AND filename=$2";
       const deleteFileQueryText = [
@@ -255,10 +270,15 @@ const deleteFile = (request, response) => {
         if (err) console.log(err, err.stack);
         else console.log();
       });
+      await client.query("COMMIT");
 
       response.status(200).send("file is successfully deleted");
     } catch (e) {
+      await client.query("ROLLBACK");
+
       console.log(e);
+    } finally {
+      client.release();
     }
   })().catch(e => {
     console.log("Unable to connect to database");
@@ -270,6 +290,8 @@ const editFile = (request, response) => {
   (async () => {
     const client = await pool.connect();
     try {
+      await client.query("BEGIN");
+
       const date = new Date().toLocaleString();
 
       const updateFileQuery =
@@ -281,10 +303,15 @@ const editFile = (request, response) => {
         `${request.body.email}`
       ];
       await client.query(updateFileQuery, updateFileQueryValues);
+      await client.query("COMMIT");
 
       response.status(200).send("file is updated");
     } catch (e) {
+      await client.query("ROLLBACK");
+
       console.log(e);
+    } finally {
+      client.release();
     }
   })().catch(e => {
     console.log("Unable to connect to database");
@@ -337,6 +364,8 @@ const adminGetAllFiles = (request, response) => {
     if (email === "adminpanel@gmail.com" && password === "adminminhphan172") {
       const client = await pool.connect();
       try {
+        await client.query("BEGIN");
+
         //get all files from s3
         let file = [];
         let params = {
@@ -400,9 +429,15 @@ const adminGetAllFiles = (request, response) => {
         // console.log("file--3---", file);
 
         // console.log("fileInfoRows---", fileInfoRows);
+        await client.query("COMMIT");
+
         response.status(200).send(fileInfoRows);
       } catch (e) {
+        await client.query("ROLLBACK");
+
         console.log(e);
+      } finally {
+        client.release();
       }
     } else {
       response.status(401).send("invalid admin username or password");

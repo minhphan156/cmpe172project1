@@ -13,7 +13,7 @@ export const uploadFileAction = (file, history) => dispatch => {
   console.log("============upload action============");
 
   axios
-    .post("http://localhost:3001/users/upload", formData)
+    .post("/users/upload", formData)
     .then(res => {
       history.push("/");
       dispatch({

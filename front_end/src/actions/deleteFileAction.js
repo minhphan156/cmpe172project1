@@ -2,7 +2,7 @@ import axios from "axios";
 import { getAllFilesAction, adminGetAllFilesAction } from "./getAllFiles";
 export const deleteFileAction = (file, history) => dispatch => {
   axios
-    .post("http://localhost:3001/users/deletefile", file)
+    .post("/users/deletefile", file)
     .then(res => {
       console.log("deletefileaction-", res);
       dispatch(getAllFilesAction(file.email));
@@ -15,7 +15,7 @@ export const deleteFileAction = (file, history) => dispatch => {
 
 export const adminDeleteFileAction = (file, history) => dispatch => {
   axios
-    .post("http://localhost:3001/users/deletefile", file)
+    .post("/users/deletefile", file)
     .then(res => {
       console.log("deletefileaction-", res);
       dispatch(

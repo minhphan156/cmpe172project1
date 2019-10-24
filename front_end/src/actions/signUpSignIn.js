@@ -2,7 +2,7 @@ import axios from "axios";
 import { IS_LOGGED_IN, LOG_OUT } from "./types";
 export const createAccount = (signUpInfo, history) => dispatch => {
   axios
-    .post("http://localhost:3001/users/newuser", signUpInfo)
+    .post("/users/newuser", signUpInfo)
     .then(res => {
       console.log("new account created ", res);
       history.push("/");
@@ -20,7 +20,7 @@ export const createAccount = (signUpInfo, history) => dispatch => {
 
 export const verifyAccount = (signInInfo, history) => dispatch => {
   axios
-    .post("http://localhost:3001/users/verifyuser", signInInfo)
+    .post("/users/verifyuser", signInInfo)
     .then(res => {
       console.log("push to homepage");
       dispatch({

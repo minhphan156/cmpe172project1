@@ -10,7 +10,7 @@ export const editFileAction = (file, history) => {
 
 export const editFileDataBase = (file, history) => dispatch => {
   axios
-    .post("http://localhost:3001/users/editfile", file)
+    .post("/users/editfile", file)
     .then(res => {
       // dispatch(getAllFilesAction(file.email));
       console.log("file edited successfully");

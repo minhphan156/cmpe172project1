@@ -132,7 +132,7 @@ class LandingPage extends Component {
                   variant="h6"
                   style={{ color: "white", marginLeft: 10 }}
                 >
-                  Hi {this.props.user.userInfo.firstName}!
+                  Hi {this.props.user.userInfo.firstname}!
                 </Typography>
                 <Link
                   style={{ color: "white", marginLeft: "auto", marginRight: 0 }}

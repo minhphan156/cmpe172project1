@@ -2,7 +2,7 @@ import axios from "axios";
 import { IS_LOGGED_IN } from "./types";
 export const loginWithFacebookGoogle = (signInInfo, history) => dispatch => {
   axios
-    .post("http://localhost:3001/users/loginWithFacebook", signInInfo)
+    .post("/users/loginWithFacebook", signInInfo)
     .then(res => {
       console.log("loginWithFacebook or google action", res);
 

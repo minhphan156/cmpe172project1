@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "nodemon node ./bin/www"
+    "start": "nodemon --exec babel-node ./bin/www",
+    "build": "babel server.js --out-file server.compiled.js"
   },
   "dependencies": {
     "aws-sdk": "^2.550.0",
@@ -17,5 +18,11 @@
     "nodemon": "^1.19.3",
     "pg": "^7.12.1",
     "pug": "2.0.0-beta11"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.6.4",
+    "@babel/core": "^7.6.4",
+    "@babel/node": "^7.6.3",
+    "@babel/preset-env": "^7.6.3"
   }
 }

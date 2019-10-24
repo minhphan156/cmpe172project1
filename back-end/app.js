@@ -8,26 +8,14 @@ var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 
 var app = express();
+// serve static web of react frontend
+app.use(express.static(path.join(__dirname, "/../front_end", "build")));
+
 var cors = require("cors");
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "pug");
-
-// Enable Cross-Origin Resource Sharing (CORS)
-// var cors = function(req, res, next) {
-//   res.header("Access-Control-Allow-Origin", "*");
-//   res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
-//   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-//   if (req.method === "OPTIONS") {
-//     // OPTIONS requests should immediately respond back to the client with the CORS headers.
-//     res.status(200).end();
-//   } else {
-//     // Otherwise, continue to next.
-//     next();
-//   }
-// };
 
 app.use(logger("dev"));
 app.use(express.json());

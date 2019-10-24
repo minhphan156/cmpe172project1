@@ -1,0 +1,5 @@
+branch-defaults:
+  master:
+    environment: Cmpe172project1-env
+global:
+  profile: null

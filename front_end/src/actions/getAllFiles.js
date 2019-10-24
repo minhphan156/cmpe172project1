@@ -3,7 +3,7 @@ import axios from "axios";
 
 export const getAllFilesAction = email => dispatch => {
   axios
-    .post("http://localhost:3001/users/getAllFiles", { email })
+    .post("/users/getAllFiles", { email })
     .then(res => {
       console.log("getAllFilesAction-", res);
       dispatch({
@@ -16,7 +16,7 @@ export const getAllFilesAction = email => dispatch => {
 
 export const adminGetAllFilesAction = (signInInfo, history) => dispatch => {
   axios
-    .post("http://localhost:3001/users/adminGetAllFiles", signInInfo)
+    .post("/users/adminGetAllFiles", signInInfo)
     .then(res => {
       console.log("getAllFilesAction-", res);
       dispatch({
